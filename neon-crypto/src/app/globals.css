@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --primary: 112, 0, 255;
+  --secondary: 0, 194, 255;
+  --background: 5, 5, 5;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background-color: #050505;
+  
+  /* Fond cosmique amélioré avec plus de profondeur */
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(var(--primary), 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(var(--secondary), 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(var(--primary), 0.06) 0%, transparent 50%);
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar moderne et élégante */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7000FF 0%, #5000CC 100%);
+  border-radius: 10px;
+  border: 2px solid #0a0a0a;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8000FF 0%, #6000DD 100%);
+  box-shadow: 0 0 10px rgba(112, 0, 255, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #7000FF #0a0a0a;
+}
+
+/* Glass panel effect - optimisé */
+.glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(112, 0, 255, 0.3);
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(112, 0, 255, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+}
+
+/* Animation shimmer pour les boutons */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Animation de glow pulse */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(112, 0, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(112, 0, 255, 0.6);
+  }
+}
+
+/* Animation fade-in améliorée */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sélection personnalisée */
+::selection {
+  background-color: rgba(112, 0, 255, 0.3);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background-color: rgba(112, 0, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Focus visible amélioré pour l'accessibilité */
+*:focus-visible {
+  outline: 2px solid rgba(112, 0, 255, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth transitions globales */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Désactiver les transitions pour les utilisateurs préférant moins d'animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Amélioration des performances pour les animations */
+.animate-spin,
+.animate-pulse {
+  will-change: transform;
+}
+
+/* Effet de chargement skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
