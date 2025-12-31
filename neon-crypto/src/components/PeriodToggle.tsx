@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Clock } from 'lucide-react';
 
 interface PeriodToggleProps {
   periods: Array<{ value: string; label: string }>;
@@ -13,33 +14,35 @@ const PeriodToggle: React.FC<PeriodToggleProps> = ({
   onChange,
 }) => {
   return (
-    <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-2 inline-flex gap-2">
-      {periods.map((period) => {
-        const isActive = selected === period.value;
-        return (
-          <motion.button
-            key={period.value}
-            onClick={() => onChange(period.value)}
-            className={`
-              relative px-8 py-3.5 rounded-xl text-base font-bold transition-all
-              ${isActive 
-                ? 'text-white' 
-                : 'text-zinc-500 hover:text-zinc-300'}
-            `}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {isActive && (
-              <motion.div
-                layoutId="period-active"
-                className="absolute inset-0 bg-[#7000FF] rounded-xl shadow-lg shadow-[#7000FF]/50"
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              />
-            )}
-            <span className="relative z-10">{period.label}</span>
-          </motion.button>
-        );
-      })}
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 text-gray-600">
+        <Clock size={16} />
+        <span className="text-sm font-bold uppercase tracking-wider">
+          Période d'analyse
+        </span>
+      </div>
+      
+      <div className="grid grid-cols-5 gap-3">
+        {periods.map((period) => {
+          const isActive = selected === period.value;
+          return (
+            <motion.button
+              key={period.value}
+              onClick={() => onChange(period.value)}
+              className={`
+                relative px-5 py-4 rounded-xl text-base font-bold transition-all border-2 shadow-sm
+                ${isActive 
+                  ? 'bg-gradient-to-br from-[#7000FF] to-[#5000CC] border-[#7000FF] text-white shadow-lg shadow-[#7000FF]/30' 
+                  : 'bg-white border-gray-200 text-gray-600 hover:border-[#7000FF]/40 hover:text-gray-900 hover:shadow-md'}
+              `}
+              whileHover={{ y: -3, scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {period.label}
+            </motion.button>
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -2,10 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BrainCircuit, TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
+import { BrainCircuit, TrendingUp, TrendingDown, Sparkles, Send } from 'lucide-react';
 import Card from './Card';
-import Button from './Button';
-import Badge from './Badge';
 import LoadingDots from './LoadingDots';
 
 interface PredictionResult {
@@ -22,11 +20,16 @@ interface PredictionResult {
 
 const CompactAIWidget = ({ selectedCoin = "bitcoin" }: { selectedCoin: string }) => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<PredictionResult | null>(null);
+  const [messages, setMessages] = useState<Array<{type: 'user' | 'ai', content: any}>>([]);
 
   const fetchPrediction = async () => {
     setLoading(true);
-    setData(null);
+    
+    // Message utilisateur
+    setMessages(prev => [...prev, {
+      type: 'user',
+      content: `Analyse ${selectedCoin}`
+    }]);
     
     try {
       const res = await fetch('http://127.0.0.1:5000/api/predict', {
@@ -35,180 +38,159 @@ const CompactAIWidget = ({ selectedCoin = "bitcoin" }: { selectedCoin: string })
         body: JSON.stringify({ coin: selectedCoin }),
       });
       const result = await res.json();
-      setData(result);
+      
+      // Message AI
+      setMessages(prev => [...prev, {
+        type: 'ai',
+        content: result
+      }]);
     } catch (error) {
       console.error(error);
-      alert("⚠️ Serveur Python non lancé\nCommande: python app.py");
+      setMessages(prev => [...prev, {
+        type: 'ai',
+        content: { error: true, message: "Serveur Python non lancé" }
+      }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative">
-      {/* Glow effect */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-[#7000FF]/30 to-[#00C2FF]/30 rounded-3xl blur-xl opacity-50" />
-      
-      <Card className="relative p-8 space-y-8 bg-[#121212]">
+    <div className="relative h-full">
+      <Card className="relative p-6 bg-white h-full flex flex-col">
         
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <motion.div 
-              className="p-3 bg-gradient-to-br from-[#7000FF] to-[#5000CC] rounded-2xl"
-              whileHover={{ rotate: 360, scale: 1.1 }}
-              transition={{ duration: 0.6 }}
-            >
-              <BrainCircuit size={24} className="text-white" />
-            </motion.div>
-            <div>
-              <h3 className="text-lg font-black text-white">Oracle AI</h3>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles size={12} className="text-[#7000FF]" />
-                Neural Engine
-              </p>
-            </div>
+        <div className="flex items-center gap-3 pb-6 border-b border-gray-200">
+          <motion.div 
+            className="p-2.5 bg-gradient-to-br from-[#7000FF] to-[#5000CC] rounded-xl shadow-sm"
+            whileHover={{ rotate: 360 }}
+            transition={{ duration: 0.6 }}
+          >
+            <BrainCircuit size={20} className="text-white" />
+          </motion.div>
+          <div className="flex-1">
+            <h3 className="text-base font-black text-gray-900">Oracle AI</h3>
+            <span className="text-xs text-gray-500 uppercase tracking-wider inline-flex items-center gap-1">
+              <Sparkles size={10} className="text-[#7000FF]" />
+              Neural Engine
+            </span>
           </div>
-          
-          {data && (
-            <Badge variant="success" size="sm" animated>
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              Active
-            </Badge>
-          )}
+          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
         </div>
 
-        {/* Content */}
-        <div className="min-h-[280px] flex items-center justify-center">
-          <AnimatePresence mode="wait">
-            
-            {/* Initial State */}
-            {!data && !loading && (
+        {/* Chat Messages */}
+        <div className="flex-1 overflow-y-auto py-6 space-y-4 max-h-[500px]">
+          {messages.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12 space-y-4"
+            >
               <motion.div
-                key="initial"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="text-center space-y-6 py-12"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity 
+                }}
+                className="text-5xl"
               >
-                <motion.div
-                  animate={{ 
-                    rotate: [0, 10, -10, 0],
-                    scale: [1, 1.1, 1]
-                  }}
-                  transition={{ 
-                    duration: 3, 
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="text-6xl"
-                >
-                  🔮
-                </motion.div>
-                <div className="space-y-2">
-                  <p className="text-lg font-bold text-white">Prêt à analyser</p>
-                  <p className="text-sm text-zinc-500">
-                    Analyse IA pour <span className="text-white font-bold capitalize">{selectedCoin}</span>
-                  </p>
-                </div>
+                🤖
               </motion.div>
-            )}
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-gray-900">Assistant IA prêt</p>
+                <p className="text-xs text-gray-500">
+                  Demandez une analyse pour <span className="text-[#7000FF] font-bold capitalize">{selectedCoin}</span>
+                </p>
+              </div>
+            </motion.div>
+          )}
 
-            {/* Loading State */}
-            {loading && (
+          <AnimatePresence mode="popLayout">
+            {messages.map((msg, idx) => (
               <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center space-y-6 py-12"
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="w-16 h-16 border-4 border-[#7000FF]/30 border-t-[#7000FF] rounded-full mx-auto"
-                />
-                <div className="space-y-2">
-                  <p className="text-sm text-zinc-400 flex items-center justify-center gap-2">
-                    Analyse en cours
-                    <LoadingDots />
-                  </p>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Results */}
-            {data && (
-              <motion.div
-                key="results"
+                key={idx}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="w-full space-y-6"
+                className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {/* Trend Card */}
-                <motion.div
-                  className={`
-                    p-8 rounded-2xl border-2 text-center
-                    ${data.ai_analysis.color === 'green' 
-                      ? 'bg-emerald-500/10 border-emerald-500/30 shadow-lg shadow-emerald-500/20' 
-                      : 'bg-rose-500/10 border-rose-500/30 shadow-lg shadow-rose-500/20'}
-                  `}
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <motion.div 
-                    className="flex items-center justify-center gap-3 mb-3"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 200 }}
-                  >
-                    {data.ai_analysis.color === 'green' 
-                      ? <TrendingUp size={32} className="text-emerald-400" strokeWidth={3} /> 
-                      : <TrendingDown size={32} className="text-rose-400" strokeWidth={3} />
-                    }
-                  </motion.div>
-                  <p className={`text-3xl font-black ${data.ai_analysis.color === 'green' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {data.ai_analysis.trend}
-                  </p>
-                </motion.div>
+                {msg.type === 'user' ? (
+                  <div className="bg-gradient-to-r from-[#7000FF] to-[#5000CC] text-white px-5 py-3 rounded-2xl rounded-tr-sm max-w-[80%] shadow-sm">
+                    <span className="text-sm font-medium">{msg.content}</span>
+                  </div>
+                ) : msg.content.error ? (
+                  <div className="bg-rose-50 border border-rose-200 text-rose-600 px-5 py-3 rounded-2xl rounded-tl-sm max-w-[80%]">
+                    <span className="text-xs font-medium">⚠️ {msg.content.message}</span>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 border border-gray-200 text-gray-900 px-5 py-4 rounded-2xl rounded-tl-sm max-w-[85%] space-y-3">
+                    {/* Trend */}
+                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm ${
+                      msg.content.ai_analysis.color === 'green' 
+                        ? 'bg-emerald-100 text-emerald-700' 
+                        : 'bg-rose-100 text-rose-700'
+                    }`}>
+                      {msg.content.ai_analysis.color === 'green' 
+                        ? <TrendingUp size={16} /> 
+                        : <TrendingDown size={16} />
+                      }
+                      {msg.content.ai_analysis.trend}
+                    </div>
 
-                {/* Metrics Grid */}
-                <div className="grid grid-cols-2 gap-4">
-                  <motion.div
-                    className="bg-white/5 p-5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
-                    whileHover={{ y: -4 }}
-                  >
-                    <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Confiance</p>
-                    <p className="text-2xl font-black text-white tabular-nums">{data.ai_analysis.confidence}</p>
-                  </motion.div>
-                  <motion.div
-                    className="bg-white/5 p-5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
-                    whileHover={{ y: -4 }}
-                  >
-                    <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Prix Cible</p>
-                    <p className="text-xl font-black text-white tabular-nums">${data.ai_analysis.target_price.toLocaleString()}</p>
-                  </motion.div>
-                </div>
+                    {/* Métriques */}
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-gray-500">Confiance:</span>
+                        <span className="text-gray-900 font-bold ml-1 tabular-nums">{msg.content.ai_analysis.confidence}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Cible:</span>
+                        <span className="text-gray-900 font-bold ml-1 tabular-nums">${msg.content.ai_analysis.target_price.toLocaleString()}</span>
+                      </div>
+                    </div>
 
-                {/* Timestamp */}
-                <p className="text-xs text-center text-zinc-600 pt-2">
-                  Analysé à {new Date(data.timestamp * 1000).toLocaleTimeString('fr-FR')}
-                </p>
+                    {/* Time */}
+                    <div className="text-[10px] text-gray-500 text-right">
+                      {new Date(msg.content.timestamp * 1000).toLocaleTimeString('fr-FR')}
+                    </div>
+                  </div>
+                )}
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
+
+          {loading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-start"
+            >
+              <div className="bg-gray-50 border border-gray-200 px-4 py-3 rounded-2xl rounded-tl-sm">
+                <span className="text-sm text-gray-600 inline-flex items-center gap-2">
+                  Analyse en cours
+                  <LoadingDots />
+                </span>
+              </div>
+            </motion.div>
+          )}
         </div>
 
-        {/* CTA Button */}
-        <Button
-          variant="primary"
-          size="lg"
-          fullWidth
-          loading={loading}
-          onClick={fetchPrediction}
-        >
-          {data ? 'Relancer l\'Analyse' : 'Lancer la Prédiction'}
-        </Button>
+        {/* Input */}
+        <div className="pt-4 border-t border-gray-200">
+          <motion.button
+            onClick={fetchPrediction}
+            disabled={loading}
+            className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#7000FF] to-[#5000CC] text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#7000FF]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            whileHover={{ scale: loading ? 1 : 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Send size={16} />
+            {loading ? 'Analyse...' : 'Analyser maintenant'}
+          </motion.button>
+        </div>
       </Card>
     </div>
   );

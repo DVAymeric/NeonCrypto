@@ -28,15 +28,19 @@ const CompactStatCard: React.FC<CompactStatCardProps> = ({
       className="relative group"
     >
       {/* Glow background */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#7000FF]/20 to-[#00C2FF]/20 rounded-2xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+      <div className={`absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-500 ${
+        isPositive 
+          ? 'bg-gradient-to-r from-emerald-500/30 to-[#7000FF]/30' 
+          : 'bg-gradient-to-r from-rose-500/30 to-[#7000FF]/30'
+      }`} />
       
       {/* Card */}
-      <div className="relative bg-[#121212] border border-white/10 rounded-2xl p-8 group-hover:border-white/20 transition-all duration-300">
+      <div className="relative bg-[#1A1A2E] border border-[#252540] rounded-2xl p-8 group-hover:border-[#7000FF]/50 transition-all duration-300">
         
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <motion.div 
-            className="p-4 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl"
+            className="p-4 bg-gradient-to-br from-[#7000FF]/20 to-[#5000CC]/20 rounded-2xl border border-[#7000FF]/30"
             whileHover={{ rotate: 360, scale: 1.1 }}
             transition={{ duration: 0.6 }}
           >
@@ -49,8 +53,8 @@ const CompactStatCard: React.FC<CompactStatCardProps> = ({
             className={`
               inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold border
               ${isPositive 
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
-                : 'bg-rose-500/10 text-rose-400 border-rose-500/30'}
+                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                : 'bg-rose-500/20 text-rose-400 border-rose-500/40'}
             `}
             whileHover={{ scale: 1.1 }}
           >
@@ -74,7 +78,7 @@ const CompactStatCard: React.FC<CompactStatCardProps> = ({
 
         {/* Bottom accent line */}
         <motion.div 
-          className={`mt-6 h-1 rounded-full ${isPositive ? 'bg-emerald-500' : 'bg-rose-500'}`}
+          className={`mt-6 h-1 rounded-full ${isPositive ? 'bg-gradient-to-r from-emerald-500 to-[#7000FF]' : 'bg-gradient-to-r from-rose-500 to-[#7000FF]'}`}
           initial={{ width: 0 }}
           animate={{ width: "100%" }}
           transition={{ duration: 0.8, delay: delay + 0.2 }}

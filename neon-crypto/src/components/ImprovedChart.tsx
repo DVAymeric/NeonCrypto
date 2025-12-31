@@ -4,19 +4,29 @@ import { useQuery } from "@tanstack/react-query";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { RefreshCw } from "lucide-react";
 import Badge from "./Badge";
 import { Skeleton } from "./SkeletonLoader";
+import EmptyState from "./EmptyState";
+import Button from "./Button";
 
-interface ModernChartProps {
+interface ImprovedChartProps {
   coinId: string;
   days: string;
 }
 
 const fetchMarketChart = async (coinId: string, days: string) => {
   const response = await fetch(
-    `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`
+    `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=daily`
   );
-  if (!response.ok) throw new Error('Failed to fetch');
+  
+  if (!response.ok) {
+    if (response.status === 429) {
+      throw new Error('RATE_LIMIT');
+    }
+    throw new Error('FETCH_ERROR');
+  }
+  
   return response.json();
 };
 
@@ -30,14 +40,16 @@ const calculateSMA = (data: any[], period: number) => {
   });
 };
 
-export default function ModernChart({ coinId, days }: ModernChartProps) {
-  const { data, isLoading, isError } = useQuery({
+export default function ImprovedChart({ coinId, days }: ImprovedChartProps) {
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["marketChart", coinId, days],
     queryFn: () => fetchMarketChart(coinId, days),
-    staleTime: 60000,
+    staleTime: 120000, // 2 minutes
+    retry: 2,
+    retryDelay: 1000,
   });
 
-  const formattedData = data?.prices.map(([timestamp, price]: [number, number]) => ({
+  const formattedData = data?.prices?.map(([timestamp, price]: [number, number]) => ({
     date: timestamp,
     value: price,
   })) || [];
@@ -46,6 +58,7 @@ export default function ModernChart({ coinId, days }: ModernChartProps) {
     ? calculateSMA(formattedData, 14) 
     : formattedData;
 
+  // Loading state
   if (isLoading) {
     return (
       <div className="h-[500px] w-full space-y-6">
@@ -58,13 +71,42 @@ export default function ModernChart({ coinId, days }: ModernChartProps) {
     );
   }
 
+  // Error state
   if (isError) {
+    const isRateLimit = error instanceof Error && error.message === 'RATE_LIMIT';
+    
     return (
       <div className="h-[500px] w-full flex items-center justify-center">
-        <div className="text-center space-y-2">
-          <p className="text-rose-500 text-sm font-semibold">Erreur de chargement</p>
-          <p className="text-gray-500 text-xs">Impossible de récupérer les données</p>
-        </div>
+        <EmptyState
+          title={isRateLimit ? "Limite d'API atteinte" : "Erreur de chargement"}
+          description={
+            isRateLimit 
+              ? "Trop de requêtes à CoinGecko. Attendez 1 minute avant de réessayer." 
+              : "Impossible de récupérer les données. Vérifiez votre connexion."
+          }
+          action={
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => refetch()}
+              icon={<RefreshCw size={18} />}
+            >
+              Réessayer
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
+
+  // No data
+  if (chartData.length === 0) {
+    return (
+      <div className="h-[500px] w-full flex items-center justify-center">
+        <EmptyState
+          title="Aucune donnée disponible"
+          description="Les données pour cette période ne sont pas disponibles."
+        />
       </div>
     );
   }

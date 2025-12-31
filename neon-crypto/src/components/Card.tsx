@@ -14,7 +14,7 @@ const Card: React.FC<CardProps> = ({
 }) => {
   
   const baseClasses = `
-    bg-[#121212] border border-white/6 rounded-xl
+    bg-[#1A1A2E] border border-[#252540] rounded-2xl
     ${className}
   `;
 
@@ -26,8 +26,9 @@ const Card: React.FC<CardProps> = ({
     <motion.div
       className={baseClasses}
       whileHover={{ 
-        y: -2,
-        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+        y: -4,
+        borderColor: "rgba(112, 0, 255, 0.5)",
+        boxShadow: "0 8px 24px rgba(112, 0, 255, 0.2)",
       }}
       transition={{ duration: 0.2 }}
     >

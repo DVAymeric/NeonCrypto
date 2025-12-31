@@ -13,7 +13,7 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
   onChange,
 }) => {
   return (
-    <div className="grid grid-cols-3 gap-4 w-full">
+    <div className="grid grid-cols-3 gap-6 w-full">
       {coins.map((coin) => {
         const isActive = selected === coin.id;
         return (
@@ -21,30 +21,40 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
             key={coin.id}
             onClick={() => onChange(coin.id)}
             className={`
-              relative overflow-hidden rounded-2xl p-6 transition-all
+              relative overflow-hidden rounded-2xl p-8 transition-all border-2 shadow-sm
               ${isActive 
-                ? 'bg-gradient-to-br from-[#7000FF] to-[#5000CC] shadow-2xl shadow-[#7000FF]/40' 
-                : 'bg-[#1A1A1A] hover:bg-[#222] border border-white/10 hover:border-white/20'}
+                ? 'bg-gradient-to-br from-[#7000FF] to-[#5000CC] border-[#7000FF] shadow-xl shadow-[#7000FF]/30' 
+                : 'bg-white border-gray-200 hover:border-[#7000FF]/40 hover:shadow-md'}
             `}
-            whileHover={{ y: -4, scale: 1.02 }}
+            whileHover={{ y: -6, scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
           >
-            {/* Glow effect pour l'actif */}
+            {/* Glow effect */}
             {isActive && (
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"
+                animate={{ opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
             )}
             
-            <div className="relative z-10 flex flex-col items-center gap-3">
-              <span className="text-4xl">{coin.symbol}</span>
+            <div className="relative z-10 flex flex-col items-center gap-4">
+              <motion.span 
+                className="text-5xl"
+                animate={isActive ? { rotate: [0, 10, -10, 0] } : {}}
+                transition={{ duration: 0.5 }}
+              >
+                {coin.symbol}
+              </motion.span>
               <div className="text-center">
-                <p className={`text-lg font-bold tracking-wide ${isActive ? 'text-white' : 'text-zinc-400'}`}>
+                <p className={`text-xl font-bold tracking-wide ${isActive ? 'text-white' : 'text-gray-900'}`}>
                   {coin.label}
                 </p>
                 {isActive && (
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
-                    className="h-1 bg-white/50 rounded-full mt-2"
+                    className="h-1 bg-white/60 rounded-full mt-3"
                   />
                 )}
               </div>
