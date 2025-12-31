@@ -16,13 +16,14 @@ interface PredictionResult {
   timestamp: number;
 }
 
-const CryptoAI = ({ selectedCoin = "BTC" }: { selectedCoin: string }) => {
+const CryptoAI = ({ selectedCoin = "bitcoin" }: { selectedCoin: string }) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<PredictionResult | null>(null);
 
   const fetchPrediction = async () => {
     setLoading(true);
     setData(null);
+    
     try {
       const res = await fetch('http://127.0.0.1:5000/api/predict', {
         method: 'POST',
@@ -33,114 +34,209 @@ const CryptoAI = ({ selectedCoin = "BTC" }: { selectedCoin: string }) => {
       setData(result);
     } catch (error) {
       console.error(error);
-      alert("Erreur: Vérifie que ton terminal Python est lancé !");
+      alert("⚠️ Erreur: Vérifie que ton serveur Python est lancé !\n\nCommande: python app.py");
     } finally {
       setLoading(false);
     }
   };
 
-  // Couleurs dynamiques selon le résultat
-  const statusColor = data?.ai_analysis.color === 'green' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5' 
-                    : data?.ai_analysis.color === 'red' ? 'text-rose-500 border-rose-500/30 bg-rose-500/5' 
-                    : 'text-gray-400 border-gray-500/30';
-
-  const glowEffect = data?.ai_analysis.color === 'green' ? 'shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]' 
-                   : data?.ai_analysis.color === 'red' ? 'shadow-[0_0_40px_-10px_rgba(244,63,94,0.3)]' 
-                   : 'shadow-none';
-
   return (
-    <div className={`relative h-full flex flex-col justify-between glass-panel rounded-3xl overflow-hidden transition-all duration-500 ${glowEffect}`}>
+    <div className="bg-[#0a0a0a] border border-white/8 rounded-2xl overflow-hidden">
       
-      {/* Header */}
-      <div className="p-6 border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-[#7000FF] to-[#00C2FF] rounded-lg text-white shadow-lg shadow-purple-500/20">
-            <BrainCircuit size={20} />
+      {/* Header - Plus d'espace */}
+      <div className="p-7 border-b border-white/8 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="p-3.5 bg-gradient-to-br from-[#7000FF] to-[#5000CC] rounded-xl shadow-lg">
+            <BrainCircuit size={22} className="text-white" strokeWidth={2.5} />
           </div>
           <div>
-            <h2 className="text-base font-bold text-white leading-none">Oracle AI</h2>
-            <span className="text-[10px] text-gray-400 font-mono tracking-wider uppercase">Python Engine v2.0</span>
+            <h2 className="text-lg font-black text-white tracking-tight">Oracle AI</h2>
+            <p className="text-[11px] text-gray-500 uppercase tracking-wider font-mono mt-1">
+              Neural Engine v2.0
+            </p>
           </div>
         </div>
-        {data && <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>}
-      </div>
-
-      {/* Contenu */}
-      <div className="flex-1 p-6 flex flex-col justify-center items-center text-center relative">
-        
-        {!data && !loading && (
-          <div className="space-y-6 animate-in fade-in zoom-in duration-500">
-             <div className="w-24 h-24 rounded-full bg-gradient-to-b from-white/5 to-transparent border border-white/10 flex items-center justify-center mx-auto relative group">
-                <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                <Zap size={36} className="text-white fill-white relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-             </div>
-             <div>
-                <h3 className="text-xl font-bold text-white mb-2">Prêt à Analyser</h3>
-                <p className="text-sm text-gray-400 max-w-[260px] mx-auto leading-relaxed">
-                  Lancez le réseau neuronal pour scanner le sentiment social du <span className="text-white font-bold underline decoration-purple-500 underline-offset-4 capitalize">{selectedCoin}</span>.
-                </p>
-             </div>
-          </div>
-        )}
-
-        {loading && (
-          <div className="flex flex-col items-center gap-5">
-             <div className="relative">
-               <div className="absolute inset-0 bg-[#7000FF] blur-2xl opacity-40 animate-pulse rounded-full"></div>
-               <Loader2 className="w-14 h-14 text-[#7000FF] animate-spin relative z-10" />
-             </div>
-             <p className="text-xs text-purple-200 font-bold tracking-[0.2em] uppercase animate-pulse">Traitement des données...</p>
-          </div>
-        )}
-
         {data && (
-          <div className="w-full space-y-5 animate-in slide-in-from-bottom-4 duration-500">
-            {/* Résultat Principal */}
-            <div className={`py-5 px-4 rounded-2xl border ${statusColor} relative overflow-hidden group`}>
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 block mb-1">Tendance</span>
-              <div className="text-3xl font-black tracking-tight flex items-center justify-center gap-2">
-                 {data.ai_analysis.color === 'green' ? <TrendingUp size={28}/> : <TrendingDown size={28}/>}
-                 {data.ai_analysis.trend}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/15 border border-emerald-500/25 rounded-full">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-400/50"></div>
+            <span className="text-[11px] text-emerald-400 font-bold uppercase tracking-wide">Active</span>
+          </div>
+        )}
+      </div>
+
+      {/* Contenu Principal - Espacement généreux */}
+      <div className="p-8 min-h-[560px] flex flex-col justify-center">
+        
+        {/* État Initial */}
+        {!data && !loading && (
+          <div className="text-center space-y-8 py-10">
+            <div className="relative w-24 h-24 mx-auto">
+              <div className="absolute inset-0 bg-[#7000FF]/20 rounded-full blur-3xl animate-pulse"></div>
+              <div className="relative w-full h-full rounded-full bg-gradient-to-b from-white/10 to-white/5 border-2 border-white/10 flex items-center justify-center">
+                <Zap size={36} className="text-white" />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-2xl font-bold text-white">Prêt à Analyser</h3>
+              <p className="text-base text-gray-400 max-w-[300px] mx-auto leading-relaxed">
+                Lancez l'analyse IA pour obtenir des prédictions sur{' '}
+                <span className="text-white font-semibold capitalize">{selectedCoin}</span>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Chargement */}
+        {loading && (
+          <div className="text-center space-y-8 py-10">
+            <div className="relative w-20 h-20 mx-auto">
+              <Loader2 className="w-full h-full text-[#7000FF] animate-spin" strokeWidth={2.5} />
+              <div className="absolute inset-0 bg-[#7000FF]/30 rounded-full blur-3xl animate-pulse"></div>
+            </div>
+            <div className="space-y-4">
+              <p className="text-base text-purple-300 font-semibold animate-pulse">Analyse en cours</p>
+              <div className="flex gap-2 justify-center">
+                <div className="w-2.5 h-2.5 bg-[#7000FF] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2.5 h-2.5 bg-[#7000FF] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2.5 h-2.5 bg-[#7000FF] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Résultats - Espacement PRO */}
+        {data && (
+          <div className="space-y-8 animate-fade-in">
+            
+            {/* Titre Section */}
+            <div className="text-center pb-5 border-b border-white/8">
+              <p className="text-xs text-gray-500 uppercase tracking-widest font-bold">
+                Tendance Prédite
+              </p>
+            </div>
+
+            {/* Carte Tendance - Plus grande */}
+            <div className={`
+              p-8 rounded-xl border-2 text-center
+              ${data.ai_analysis.color === 'green' 
+                ? 'bg-emerald-500/10 border-emerald-500/30' 
+                : 'bg-rose-500/10 border-rose-500/30'}
+            `}>
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className={`
+                  p-4 rounded-xl
+                  ${data.ai_analysis.color === 'green' ? 'bg-emerald-500/20' : 'bg-rose-500/20'}
+                `}>
+                  {data.ai_analysis.color === 'green' 
+                    ? <TrendingUp size={32} className="text-emerald-400" strokeWidth={2.5} /> 
+                    : <TrendingDown size={32} className="text-rose-400" strokeWidth={2.5} />
+                  }
+                </div>
+              </div>
+              <h3 className={`
+                text-4xl font-black tracking-tight
+                ${data.ai_analysis.color === 'green' ? 'text-emerald-400' : 'text-rose-400'}
+              `}>
+                {data.ai_analysis.trend}
+              </h3>
+            </div>
+
+            {/* Métriques - Espacement augmenté */}
+            <div className="space-y-4">
+              
+              {/* Confiance */}
+              <div className="p-5 bg-white/5 border border-white/8 rounded-xl hover:bg-white/8 transition-colors">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-gray-400 font-bold tracking-wide">
+                    Confiance AI
+                  </span>
+                  <span className="text-2xl font-black text-white font-mono tabular-nums">
+                    {data.ai_analysis.confidence}
+                  </span>
+                </div>
+                <div className="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#7000FF] to-[#00C2FF] rounded-full transition-all duration-1000" 
+                    style={{ width: data.ai_analysis.confidence }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Prix Cible */}
+              <div className="p-5 bg-white/5 border border-white/8 rounded-xl hover:bg-white/8 transition-colors">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-400 font-bold tracking-wide">
+                    Prix Cible
+                  </span>
+                  <span className="text-2xl font-black text-white font-mono tabular-nums">
+                    ${data.ai_analysis.target_price.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 mt-3">
+                  <div className={`
+                    w-2 h-2 rounded-full animate-pulse
+                    ${data.ai_analysis.color === 'green' ? 'bg-emerald-500' : 'bg-rose-500'}
+                  `}></div>
+                  <span className="text-xs text-gray-500 uppercase tracking-wide">
+                    24h Estimation
+                  </span>
+                </div>
+              </div>
+
+              {/* Volatilité */}
+              <div className="p-5 bg-white/5 border border-white/8 rounded-xl hover:bg-white/8 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400 font-bold tracking-wide">
+                    Volatilité
+                  </span>
+                  <span className="text-2xl font-black text-white tabular-nums">
+                    {data.ai_analysis.volatility_index.toFixed(2)}/100
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Grid Infos */}
-            <div className="grid grid-cols-2 gap-3 text-left">
-              <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
-                 <span className="text-[10px] text-gray-400 uppercase font-bold">Confiance</span>
-                 <div className="text-xl font-bold text-white mt-1">{data.ai_analysis.confidence}</div>
-              </div>
-              <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
-                 <span className="text-[10px] text-gray-400 uppercase font-bold">Target</span>
-                 <div className="text-xl font-mono text-white mt-1">${data.ai_analysis.target_price.toLocaleString()}</div>
-              </div>
+            {/* Timestamp */}
+            <div className="text-center pt-4 border-t border-white/8">
+              <p className="text-xs text-gray-600 uppercase tracking-wide">
+                Dernière analyse: {new Date(data.timestamp * 1000).toLocaleTimeString('fr-FR')}
+              </p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Footer Bouton */}
-      <div className="p-6 pt-0">
+      {/* Bouton CTA - AMÉLIORATION MAJEURE */}
+      <div className="p-8 pt-0">
         <button
           onClick={fetchPrediction}
           disabled={loading}
+          aria-label={loading ? "Analyse en cours" : data ? "Relancer l'analyse" : "Lancer la prédiction"}
           className={`
-            w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 transform
-            active:scale-[0.98] relative overflow-hidden group
+            w-full py-5 rounded-xl font-bold text-base uppercase tracking-wide transition-all duration-300
+            min-h-[56px] flex items-center justify-center gap-3
             ${loading 
               ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-white/5' 
-              : 'bg-gradient-to-r from-[#7000FF] to-[#00C2FF] text-white shadow-[0_0_20px_rgba(112,0,255,0.3)] hover:shadow-[0_0_30px_rgba(112,0,255,0.5)] hover:scale-[1.01] border border-white/10'
+              : 'bg-gradient-to-r from-[#7000FF] to-[#5000CC] text-white hover:shadow-xl hover:shadow-[#7000FF]/30 active:scale-[0.98] border-2 border-[#7000FF]/50 hover:border-[#7000FF]'
             }
           `}
         >
-          {/* Effet de brillance qui traverse le bouton */}
-          {!loading && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>}
-          
-          <span className="relative z-10 flex items-center justify-center gap-2">
-            {loading ? 'Calcul...' : data ? 'Relancer l\'analyse' : 'Lancer la Prédiction'}
-            {!loading && <Zap size={16} className="fill-white" />}
-          </span>
+          {loading ? (
+            <>
+              <Loader2 size={20} className="animate-spin" />
+              Calcul en cours...
+            </>
+          ) : data ? (
+            <>
+              Relancer l'Analyse
+              <Zap size={20} />
+            </>
+          ) : (
+            <>
+              Lancer la Prédiction
+              <Zap size={20} />
+            </>
+          )}
         </button>
       </div>
     </div>

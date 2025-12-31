@@ -1,127 +1,195 @@
 "use client";
 
 import { useState } from "react";
-import NeonChart from "../components/NeonChart";
-import StatCard from "../components/StatCard";
-import CryptoAI from "../components/CryptoAI";
-import { Bitcoin, Activity, Wallet, LayoutTemplate, Search, Bell } from "lucide-react";
 import { motion } from "framer-motion";
+import { Bitcoin, Activity, Wallet, LayoutTemplate, Search, Bell } from "lucide-react";
+
+import CompactStatCard from "../components/CompactStatCard";
+import CryptoSelector from "../components/CryptoSelector";
+import PeriodToggle from "../components/PeriodToggle";
+import ModernChart from "../components/ModernChart";
+import CompactAIWidget from "../components/CompactAIWidget";
+import Card from "../components/Card";
 
 export default function Home() {
   const [selectedCoin, setSelectedCoin] = useState("bitcoin");
   const [timeframe, setTimeframe] = useState("30");
 
-  const coins = ['bitcoin', 'ethereum', 'solana'];
-  const timeframes = ['1H', '24H', '7D', '30D', '1Y'];
+  const coins = [
+    { id: 'bitcoin', label: 'Bitcoin', symbol: '₿' },
+    { id: 'ethereum', label: 'Ethereum', symbol: 'Ξ' },
+    { id: 'solana', label: 'Solana', symbol: 'SOL' }
+  ];
+  
+  const periods = [
+    { value: '1', label: '1H' },
+    { value: '24', label: '24H' },
+    { value: '7', label: '7D' },
+    { value: '30', label: '30D' },
+    { value: '365', label: '1Y' }
+  ];
+
+  const stats = {
+    bitcoin: { price: "$88,489.24", trend: "+3.55%" },
+    ethereum: { price: "$3,234.56", trend: "+1.23%" },
+    solana: { price: "$145.23", trend: "-0.79%" }
+  };
+
+  const currentStats = stats[selectedCoin as keyof typeof stats];
 
   return (
-    <main className="min-h-screen text-white selection:bg-[#7000FF]/50 pb-20 bg-[#050505]">
+    <main className="min-h-screen bg-[#0A0A0A] text-white">
       
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#050505]/90 backdrop-blur-md">
-        <div className="max-w-[1800px] mx-auto px-8 h-24 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-             <div className="w-12 h-12 bg-[#7000FF] rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(112,0,255,0.4)]">
-                <LayoutTemplate className="text-white" size={24} />
-             </div>
-             <h1 className="text-3xl font-black tracking-tighter">NEON<span className="text-[#7000FF]">CRYPTO</span></h1>
-          </div>
+      {/* Header Premium */}
+      <motion.header 
+        className="sticky top-0 z-50 border-b border-white/10 bg-[#0A0A0A]/90 backdrop-blur-2xl"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="max-w-[1920px] mx-auto px-12 h-20 flex items-center justify-between">
           
           <div className="flex items-center gap-4">
-            <button className="p-4 rounded-2xl bg-[#1a1a1a] hover:bg-[#252525] transition-colors border border-white/5">
-                <Search size={24} className="text-gray-300"/>
-            </button>
-            <button className="p-4 rounded-2xl bg-[#1a1a1a] hover:bg-[#252525] transition-colors border border-white/5">
-                <Bell size={24} className="text-gray-300"/>
-            </button>
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gray-600 to-gray-800 border-2 border-white/10"></div>
+            <motion.div 
+              className="w-12 h-12 bg-gradient-to-br from-[#7000FF] to-[#5000CC] rounded-xl flex items-center justify-center shadow-lg"
+              whileHover={{ rotate: 360, scale: 1.1 }}
+              transition={{ duration: 0.6 }}
+            >
+              <LayoutTemplate size={22} className="text-white" />
+            </motion.div>
+            <h1 className="text-2xl font-black tracking-tight">
+              NEON<span className="text-[#7000FF]">CRYPTO</span>
+            </h1>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <motion.button
+              className="p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Search size={20} className="text-zinc-400"/>
+            </motion.button>
+            <motion.button
+              className="relative p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Bell size={20} className="text-zinc-400"/>
+              <span className="absolute top-2 right-2 w-2 h-2 bg-[#7000FF] rounded-full animate-pulse" />
+            </motion.button>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-600 to-zinc-800 border border-white/20 cursor-pointer hover:scale-110 transition-transform" />
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      <div className="max-w-[1800px] mx-auto px-8 py-12 space-y-10">
+      {/* Container avec padding généreux */}
+      <div className="max-w-[1920px] mx-auto px-12 py-12 space-y-12">
         
-        {/* SECTION STATS */}
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="space-y-3"
+        >
+          <h2 className="text-5xl font-black text-white tracking-tight">
+            Dashboard Crypto
+          </h2>
+          <p className="text-xl text-zinc-500">
+            Analyse en temps réel des marchés
+          </p>
+        </motion.div>
+
+        {/* Stats Grid - ESPACÉ */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-           <StatCard label="Prix Actuel" value={selectedCoin === 'bitcoin' ? "$98,432" : selectedCoin === 'ethereum' ? "$3,400" : "$145"} icon={<Bitcoin size={28}/>} trend="+5.2%" />
-           <StatCard label="Volume Global" value="$42.5B" icon={<Activity size={28}/>} trend="-1.2%" />
-           <StatCard label="Portefeuille" value="$12,450" icon={<Wallet size={28}/>} trend="+0.8%" />
+          <CompactStatCard 
+            label="Prix Actuel" 
+            value={currentStats.price} 
+            icon={<Bitcoin size={28}/>} 
+            trend={currentStats.trend}
+            delay={0.2}
+          />
+          <CompactStatCard 
+            label="Volume 24h" 
+            value="$42.5B" 
+            icon={<Activity size={28}/>} 
+            trend="-1.2%" 
+            delay={0.3}
+          />
+          <CompactStatCard 
+            label="Portefeuille" 
+            value="$12,450" 
+            icon={<Wallet size={28}/>} 
+            trend="+0.8%" 
+            delay={0.4}
+          />
         </div>
 
-        {/* GRILLE PRINCIPALE */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-           
-           {/* Chart Section */}
-           <div className="lg:col-span-8 flex flex-col gap-8">
+        {/* Main Grid avec VRAIES marges */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+          
+          {/* Chart Section - 2/3 */}
+          <div className="xl:col-span-2 space-y-10">
+            
+            {/* Section Title */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+            >
+              <h3 className="text-2xl font-bold text-white mb-8">
+                Analyse de Marché
+              </h3>
               
-              {/* --- BARRE DE CONTRÔLE MASSIVE --- */}
-              <div className="bg-[#0f0f0f] border border-white/10 p-4 rounded-[30px]">
-                 
-                 <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-8">
-                    
-                    {/* 1. ONGLETS CRYPTO (GÉANTS) */}
-                    <div className="flex flex-1 bg-[#161616] p-2 rounded-[24px] border border-white/5">
-                       {coins.map(coin => {
-                          const isActive = selectedCoin === coin;
-                          return (
-                            <button 
-                              key={coin} 
-                              onClick={() => setSelectedCoin(coin)}
-                              className={`
-                                relative z-10 flex-1 py-6 px-4 text-lg font-black uppercase tracking-widest text-center transition-colors duration-200 rounded-[20px]
-                                ${isActive ? 'text-white' : 'text-gray-500 hover:text-gray-200'}
-                              `}
-                            >
-                              {isActive && (
-                                <motion.div
-                                  layoutId="active-pill-crypto"
-                                  className="absolute inset-0 bg-[#7000FF] shadow-[0_0_30px_rgba(112,0,255,0.4)] rounded-[20px] -z-10"
-                                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                                />
-                              )}
-                              {coin}
-                            </button>
-                          );
-                       })}
-                    </div>
+              {/* Crypto Selector - GRAND */}
+              <CryptoSelector 
+                coins={coins}
+                selected={selectedCoin}
+                onChange={setSelectedCoin}
+              />
+            </motion.div>
 
-                    {/* 2. BOUTONS TIMEFRAME (BLOCS) */}
-                    <div className="flex gap-3 overflow-x-auto pb-2 xl:pb-0 justify-center xl:justify-end">
-                       {timeframes.map(t => {
-                          const isActive = timeframe === t;
-                          return (
-                            <button 
-                              key={t}
-                              onClick={() => setTimeframe(t)}
-                              className={`
-                                relative px-8 py-5 rounded-2xl text-base font-bold transition-all border-2
-                                ${isActive 
-                                  ? 'bg-[#1a1a1a] text-[#7000FF] border-[#7000FF] shadow-[0_0_15px_rgba(112,0,255,0.15)] scale-105' 
-                                  : 'bg-[#161616] text-gray-400 border-[#222] hover:bg-[#202020] hover:border-gray-600 hover:text-white'}
-                              `}
-                            >
-                              {t}
-                            </button>
-                          );
-                       })}
-                    </div>
-                 </div>
-              </div>
+            {/* Period Toggle - ESPACÉ */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.6 }}
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-6"
+            >
+              <span className="text-sm font-bold text-zinc-500 uppercase tracking-widest">
+                Période d'analyse
+              </span>
+              <PeriodToggle 
+                periods={periods}
+                selected={timeframe}
+                onChange={setTimeframe}
+              />
+            </motion.div>
 
-              {/* Le Graphique */}
-              <div className="bg-[#0f0f0f] border border-white/10 p-8 rounded-[30px] h-[600px] relative overflow-hidden shadow-2xl">
-                 <div className="absolute top-0 right-0 p-10 opacity-10">
-                    <Activity size={300} className="text-white transform -rotate-12"/>
-                 </div>
-                 <NeonChart coinId={selectedCoin} days={timeframe} />
-              </div>
-           </div>
+            {/* Chart Card - GRAND */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.7 }}
+            >
+              <Card className="p-10">
+                <ModernChart coinId={selectedCoin} days={timeframe} />
+              </Card>
+            </motion.div>
+          </div>
 
-           {/* AI Section (Widget) */}
-           <div className="lg:col-span-4 h-[750px] sticky top-32">
-              <CryptoAI selectedCoin={selectedCoin} />
-           </div>
-
+          {/* AI Widget - 1/3 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.8 }}
+            className="xl:col-span-1"
+          >
+            <div className="sticky top-28">
+              <CompactAIWidget selectedCoin={selectedCoin} />
+            </div>
+          </motion.div>
         </div>
       </div>
     </main>

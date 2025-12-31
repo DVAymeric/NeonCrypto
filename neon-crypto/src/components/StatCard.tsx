@@ -1,41 +1,75 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import Card from '../components/Card';
+import Badge from '../components/Bagde';
 
 interface StatCardProps {
   label: string;
   value: string;
   trend?: string;
   icon: React.ReactNode;
+  delay?: number;
 }
 
-export default function StatCard({ label, value, trend = "0%", icon }: StatCardProps) {
+const StatCard: React.FC<StatCardProps> = ({ 
+  label, 
+  value, 
+  trend = "0%", 
+  icon,
+  delay = 0 
+}) => {
   const isPositive = !trend.includes("-");
 
   return (
-    <div className="relative group overflow-hidden bg-[#13131a] border border-white/5 p-5 rounded-2xl hover:border-purple-500/30 transition-all duration-300 shadow-lg">
-      
-      {/* Glow effect au survol */}
-      <div className="absolute -right-10 -top-10 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
-
-      <div className="flex justify-between items-start mb-3 relative z-10">
-        <div className="p-2.5 bg-white/5 rounded-xl text-gray-400 group-hover:text-white group-hover:bg-white/10 transition-colors">
-          {icon}
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, delay }}
+    >
+      <Card variant="default" padding="lg" hoverable>
+        <div className="flex justify-between items-start mb-6">
+          <motion.div 
+            className="p-4 bg-white/5 rounded-xl text-gray-400"
+            whileHover={{ 
+              backgroundColor: "rgba(112, 0, 255, 0.2)",
+              color: "#ffffff",
+              scale: 1.05
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            {icon}
+          </motion.div>
+          
+          <Badge 
+            variant={isPositive ? 'success' : 'danger'}
+            size="md"
+            icon={isPositive 
+              ? <ArrowUpRight size={14} strokeWidth={3} /> 
+              : <ArrowDownRight size={14} strokeWidth={3} />
+            }
+            animated
+          >
+            <span className="font-mono tabular-nums">{trend}</span>
+          </Badge>
         </div>
-        
-        <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold border ${
-          isPositive 
-            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
-            : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-        }`}>
-          {isPositive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-          {trend}
-        </div>
-      </div>
 
-      <div className="relative z-10">
-        <h3 className="text-gray-500 text-[11px] font-bold uppercase tracking-wider mb-1">{label}</h3>
-        <p className="text-xl font-bold text-white tracking-tight">{value}</p>
-      </div>
-    </div>
+        <div className="space-y-2">
+          <p className="text-sm text-gray-400 uppercase tracking-wider font-bold">
+            {label}
+          </p>
+          <motion.p 
+            className="text-4xl font-black text-white tracking-tight tabular-nums"
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.3, delay: delay + 0.2 }}
+          >
+            {value}
+          </motion.p>
+        </div>
+      </Card>
+    </motion.div>
   );
-}
+};
+
+export default StatCard;
